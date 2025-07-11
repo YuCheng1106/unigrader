@@ -1,0 +1,12 @@
+[plugin]
+summary = '师生管理'
+version = '0.0.1'
+description = '对学校的师生进行统一管理'
+author = 'yu-cheng'
+
+[app]
+extend = 'admin'
+
+[api.student]
+prefix = '/students'
+tags = '学生信息管理'

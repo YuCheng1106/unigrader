@@ -1,0 +1,88 @@
+[project]
+name = "fastapi_best_architecture"
+description = """
+A RBAC (Role-Based Access Control) permission control system built on FastAPI, featuring a unique pseudo-three-tier
+architecture design, with built-in basic implementation of fastapi admin as a template library, free and open-source.
+"""
+authors = [
+    { name = "Wu Clan", email = "jianhengwu0407@gmail.com" },
+]
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dynamic = ['version']
+dependencies = [
+    "aiofiles>=24.1.0",
+    "alembic>=1.14.1",
+    "asgi-correlation-id>=4.3.3",
+    "asgiref>=3.8.0",
+    "asyncmy>=0.2.10",
+    "asyncpg>=0.30.0",
+    "bcrypt>=4.2.1",
+    "cappa>=0.28.0",
+    "celery==5.3.6",
+    # When celery version < 6.0.0
+    # https://github.com/celery/celery/issues/7874
+    "celery-aio-pool==0.1.0rc8",
+    "cryptography>=44.0.0",
+    "dulwich>=0.22.8",
+    "fast-captcha>=0.3.2",
+    "fastapi-limiter>=0.1.6",
+    "fastapi-pagination>=0.13.0",
+    "fastapi[standard]==0.115.11",
+    "flower>=2.0.0",
+    "gevent>=24.11.1",
+    "ip2loc>=1.0.0",
+    "itsdangerous>=2.2.0",
+    "jinja2>=3.1.4",
+    "loguru>=0.7.3",
+    "msgspec>=0.19.0",
+    "path==17.0.0",
+    "psutil>=6.0.0",
+    "pwdlib>=0.2.1",
+    "pydantic>=2.11.0",
+    "pydantic-settings>=2.0.0",
+    "python-jose>=3.3.0",
+    "python-socketio>=5.12.0",
+    "redis[hiredis]>=5.2.0",
+    "rtoml>=0.12.0",
+    "sqlalchemy-crud-plus>=1.10.0",
+    "sqlalchemy[asyncio]>=2.0.40",
+    "sqlparse>=0.5.3",
+    "user-agents==2.2.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-sugar>=1.0.0",
+]
+lint = [
+    "pre-commit>=4.0.0",
+]
+server = [
+    "aio-pika>=9.4.3",
+    "granian>=2.4.0",
+    "wait-for-it>=2.2.2",
+]
+
+[tool.uv]
+python-downloads = "manual"
+default-groups = ["dev", "lint"]
+
+[[tool.uv.index]]
+name = "aliyun"
+url = "https://mirrors.aliyun.com/pypi/simple"
+
+[tool.hatch.build.targets.wheel]
+packages = ["backend"]
+
+[tool.hatch.version]
+path = "backend/__init__.py"
+
+[project.scripts]
+fba = "backend.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
