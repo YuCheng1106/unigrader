@@ -1,0 +1,12 @@
+[plugin]
+summary = '考试管理'
+version = '0.0.1'
+description = '学校考试管理'
+author = 'yucheng'
+
+[app]
+extend = 'admin'
+
+[api.exam]
+prefix = '/exams'
+tags = '学校考试管理'
