@@ -134,6 +134,8 @@ def parse_plugin_config() -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     plugin_status = run_await(current_redis_client.hgetall)(f'{settings.PLUGIN_REDIS_PREFIX}:status')
     if not plugin_status:
         plugin_status = {}
+    # 确保所有值都是字符串类型
+    plugin_status = {k: str(v) for k, v in plugin_status.items()}
 
     for plugin in plugins:
         data = load_plugin_config(plugin)
@@ -173,7 +175,9 @@ def parse_plugin_config() -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
         )
 
     # 缓存插件状态
-    run_await(current_redis_client.hset)(f'{settings.PLUGIN_REDIS_PREFIX}:status', mapping=plugin_status)
+    if plugin_status:
+        for key, value in plugin_status.items():
+            run_await(current_redis_client.hset)(f'{settings.PLUGIN_REDIS_PREFIX}:status', key, value)
     run_await(current_redis_client.delete)(f'{settings.PLUGIN_REDIS_PREFIX}:changed')
 
     return extend_plugins, app_plugins
