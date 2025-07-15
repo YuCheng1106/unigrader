@@ -10,6 +10,7 @@ from sqlalchemy.dialects.postgresql import BYTEA, INTEGER
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.admin.model.m2m import sys_user_role
+from plugin.exam.model.m2m import sys_user_banji, sys_user_subject, sys_user_exam
 from common.model import Base, id_key
 from database.db import uuid4_str
 from utils.timezone import timezone
@@ -60,3 +61,12 @@ class User(Base):
 
     # 用户角色多对多
     roles: Mapped[list[Role]] = relationship(init=False, secondary=sys_user_role, back_populates='users')
+    
+    # 用户班级多对多
+    banjis: Mapped[list[Banji]] = relationship(init=False, secondary=sys_user_banji, back_populates='users')
+    
+    # 用户学科多对多
+    subjects: Mapped[list[Subject]] = relationship(init=False, secondary=sys_user_subject, back_populates='users')
+    
+    # 用户考试多对多
+    exams: Mapped[list[Exam]] = relationship(init=False, secondary=sys_user_exam, back_populates='users')
