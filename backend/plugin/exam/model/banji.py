@@ -24,14 +24,3 @@ class Banji(Base):
     remark: Mapped[str | None] = mapped_column(
         LONGTEXT().with_variant(TEXT, 'postgresql'), default=None, comment='备注'
     )
-
-    # 多对多关系
-    exams: Mapped[list[Exam]] = relationship(
-        init=False, secondary='exam_banji', back_populates='banjis'
-    )
-    students: Mapped[list[User]] = relationship(
-        init=False, secondary='user_banji', back_populates='banjis'
-    )
-    teachers: Mapped[list[User]] = relationship(
-        init=False, secondary='teacher_banji', back_populates='teaching_banjis'
-    )

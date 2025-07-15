@@ -18,7 +18,7 @@ async def create_banji_test_data(db: AsyncSession) -> int:
         remark='这是一个测试班级'
     )
     await banji_dao.create(db, banji_data)
-    banji = await banji_dao.get_by_column(db, name='测试班级')
+    banji = await banji_dao.select_model_by_column(db, name='测试班级')
     return banji.id
 
 

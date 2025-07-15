@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio.session import AsyncSession
 
 from database.db import create_async_engine_and_session, create_database_url
 
-TEST_SQLALCHEMY_DATABASE_URL = create_database_url(unittest=True)
+TEST_SQLALCHEMY_DATABASE_URL = create_database_url(unittest=False)
 
 _, async_test_db_session = create_async_engine_and_session(TEST_SQLALCHEMY_DATABASE_URL)
 

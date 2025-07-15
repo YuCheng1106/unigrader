@@ -25,15 +25,15 @@ class CRUDExamQuestion(CRUDPlus[ExamQuestion]):
 
     async def get_list(self, exam_id: int | None = None) -> Select:
         """
-        获取考试题目列表
+        获取考试题目列表查询条件
         
         :param exam_id: 考试 ID
         :return:
         """
-        filters = {}
         if exam_id:
-            filters.update(exam_id=exam_id)
-        return await self.select_models_order(sort_columns='sequence', **filters)
+            return await self.select_order_by_column('sequence', 'asc', exam_id=exam_id)
+        else:
+            return await self.select_order('sequence', 'asc')
 
     async def get_all(self, db: AsyncSession) -> Sequence[ExamQuestion]:
         """

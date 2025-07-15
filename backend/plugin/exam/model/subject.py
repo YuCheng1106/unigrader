@@ -20,8 +20,3 @@ class Subject(Base):
     id: Mapped[id_key] = mapped_column(init=False)
     name: Mapped[str] = mapped_column(String(255), comment='学科名称')
     remark: Mapped[str | None] = mapped_column(Text, default=None, comment='备注')
-
-    # 多对多关系
-    teachers: Mapped[list[User]] = relationship(
-        init=False, secondary='teacher_subject', back_populates='teaching_subjects'
-    )

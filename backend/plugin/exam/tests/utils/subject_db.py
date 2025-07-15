@@ -18,6 +18,7 @@ async def create_subject_test_data(db: AsyncSession) -> int:
         remark='这是一个测试学科'
     )
     subject = await subject_dao.create(db, param)
+    await db.commit()
     return subject.id
 
 
@@ -30,3 +31,4 @@ async def delete_subject_test_data(db: AsyncSession, subject_id: int) -> None:
     :return:
     """
     await subject_dao.delete(db, [subject_id])
+    await db.commit()

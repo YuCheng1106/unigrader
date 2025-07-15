@@ -76,18 +76,18 @@ class SubjectService:
             return count
 
     @staticmethod
-    async def delete(*, obj: DeleteSubjectParam) -> int:
+    async def delete(*, db: AsyncSession, obj: DeleteSubjectParam) -> int:
         """
         删除学科
 
+        :param db: 数据库会话
         :param obj: 删除学科参数
         :return:
         """
-        async with async_db_session.begin() as db:
-            count = await subject_dao.delete(db, obj.ids)
-            if count == 0:
-                raise errors.NotFoundError(msg='学科不存在')
-            return count
+        count = await subject_dao.delete(db, obj.ids)
+        if count == 0:
+            raise errors.NotFoundError(msg='学科不存在')
+        return count
 
 
 subject_service: SubjectService = SubjectService()

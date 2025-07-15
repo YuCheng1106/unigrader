@@ -72,8 +72,8 @@ async def update_subject(pk: Annotated[int, Path(description='学科 ID')], obj:
         DependsRBAC,
     ],
 )
-async def delete_subjects(obj: DeleteSubjectParam) -> ResponseModel:
-    count = await subject_service.delete(obj=obj)
+async def delete_subjects(db: CurrentSession, obj: DeleteSubjectParam) -> ResponseModel:
+    count = await subject_service.delete(db=db, obj=obj)
     if count > 0:
         return response_base.success()
     return response_base.fail()

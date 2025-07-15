@@ -60,17 +60,3 @@ class User(Base):
 
     # 用户角色多对多
     roles: Mapped[list[Role]] = relationship(init=False, secondary=sys_user_role, back_populates='users')
-
-    # 考试系统多对多关系
-    exams: Mapped[list[Exam]] = relationship(
-        init=False, secondary='exam_user', back_populates='users'
-    )
-    banjis: Mapped[list[Banji]] = relationship(
-        init=False, secondary='user_banji', back_populates='students'
-    )
-    teaching_banjis: Mapped[list[Banji]] = relationship(
-        init=False, secondary='teacher_banji', back_populates='teachers'
-    )
-    teaching_subjects: Mapped[list[Subject]] = relationship(
-        init=False, secondary='teacher_subject', back_populates='teachers'
-    )

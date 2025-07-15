@@ -10,26 +10,19 @@ from plugin.exam.tests.utils.submission_db import create_submission_test_data, d
 
 
 @pytest.fixture
-async def submission_test_data():
+async def submission_test_data(submission_db: AsyncSession):
     """
     提交测试数据fixture
     """
-    async with async_db_session.begin() as db:
-        submission = await create_submission_test_data(db, user_id=1, exam_id=1)
-        yield {
-            'id': submission.id,
-            'user_id': submission.user_id,
-            'exam_id': submission.exam_id,
-            'status': submission.status
-        }
-        # 清理测试数据
-        await delete_submission_test_data(db, submission.id)
+    submission = await create_submission_test_data(submission_db)
+    yield {
+        'id': submission.id,
+        'user_id': submission.user_id,
+        'exam_id': submission.exam_id,
+        'status': submission.status
+    }
+    # 清理测试数据
+    await delete_submission_test_data(submission_db, submission.id)
 
 
-@pytest.fixture
-async def submission_client():
-    """
-    提交API客户端fixture
-    """
-    async with AsyncClient(app=app, base_url='http://test') as client:
-        yield client
+# submission_client fixture is now defined in conftest.py

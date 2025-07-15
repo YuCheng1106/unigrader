@@ -3,8 +3,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from common.exception import errors
-from common.response import PageData
-from common.schema import PageParam
+from common.pagination import PageData
 from ..crud.crud_submission_answer import submission_answer_dao
 from ..model.submission_answer import SubmissionAnswer
 from ..schema.submission_answer import (
@@ -24,7 +23,7 @@ class SubmissionAnswerService:
         """
         通过ID获取提交答案详情
         """
-        submission_answer_obj: SubmissionAnswer = await submission_answer_dao(db).get_submission_answer_by_id(submission_answer_id)
+        submission_answer_obj: SubmissionAnswer = await submission_answer_dao.get(db, submission_answer_id)
         if not submission_answer_obj:
             raise errors.NotFoundError(msg='提交答案不存在')
         return GetSubmissionAnswerDetail.model_validate(submission_answer_obj)
@@ -34,7 +33,7 @@ class SubmissionAnswerService:
         """
         通过提交ID获取所有答案
         """
-        submission_answers = await submission_answer_dao(db).get_submission_answers_by_submission_id(submission_id)
+        submission_answers = await submission_answer_dao.get_submission_answers_by_submission_id(db, submission_id)
         return [GetSubmissionAnswerDetail.model_validate(answer) for answer in submission_answers]
 
     @staticmethod
@@ -42,7 +41,7 @@ class SubmissionAnswerService:
         """
         通过用户ID获取所有答案
         """
-        submission_answers = await submission_answer_dao(db).get_submission_answers_by_user_id(user_id)
+        submission_answers = await submission_answer_dao.get_submission_answers_by_user_id(db, user_id)
         return [GetSubmissionAnswerDetail.model_validate(answer) for answer in submission_answers]
 
     @staticmethod
@@ -50,7 +49,7 @@ class SubmissionAnswerService:
         """
         通过考试ID获取所有答案
         """
-        submission_answers = await submission_answer_dao(db).get_submission_answers_by_exam_id(exam_id)
+        submission_answers = await submission_answer_dao.get_submission_answers_by_exam_id(db, exam_id)
         return [GetSubmissionAnswerDetail.model_validate(answer) for answer in submission_answers]
 
     @staticmethod
@@ -58,7 +57,7 @@ class SubmissionAnswerService:
         """
         通过用户ID和题目ID获取答案
         """
-        submission_answer = await submission_answer_dao(db).get_submission_answer_by_user_and_question(user_id, exam_question_id)
+        submission_answer = await submission_answer_dao.get_submission_answer_by_user_and_question(db, user_id, exam_question_id)
         if not submission_answer:
             return None
         return GetSubmissionAnswerDetail.model_validate(submission_answer)
@@ -68,7 +67,7 @@ class SubmissionAnswerService:
         """
         通过批改者ID获取所有批改的答案
         """
-        submission_answers = await submission_answer_dao(db).get_submission_answers_by_grader(graded_by_id)
+        submission_answers = await submission_answer_dao.get_submission_answers_by_grader(db, graded_by_id)
         return [GetSubmissionAnswerDetail.model_validate(answer) for answer in submission_answers]
 
     @staticmethod
@@ -77,20 +76,20 @@ class SubmissionAnswerService:
         创建提交答案
         """
         # 检查是否已存在相同用户和题目的答案
-        existing_answer = await submission_answer_dao(db).get_submission_answer_by_user_and_question(
-            obj.user_id, obj.exam_question_id
+        existing_answer = await submission_answer_dao.get_submission_answer_by_user_and_question(
+            db, obj.user_id, obj.exam_question_id
         )
         if existing_answer:
             raise errors.ForbiddenError(msg='该用户已提交过此题目的答案')
         
-        await submission_answer_dao(db).create_submission_answer(obj)
+        await submission_answer_dao.create(db, obj)
 
     @staticmethod
     async def update_submission_answer(db: AsyncSession, submission_answer_id: int, obj: UpdateSubmissionAnswerParam) -> int:
         """
         更新提交答案
         """
-        count = await submission_answer_dao(db).update_submission_answer(submission_answer_id, obj)
+        count = await submission_answer_dao.update(db, submission_answer_id, obj)
         if count == 0:
             raise errors.NotFoundError(msg='提交答案不存在')
         return count
@@ -100,7 +99,7 @@ class SubmissionAnswerService:
         """
         删除提交答案
         """
-        count = await submission_answer_dao(db).delete_submission_answer(submission_answer_id)
+        count = await submission_answer_dao.delete(db, submission_answer_id)
         if count == 0:
             raise errors.NotFoundError(msg='提交答案不存在')
         return count
@@ -110,7 +109,7 @@ class SubmissionAnswerService:
         """
         批量删除提交答案
         """
-        count = await submission_answer_dao(db).delete_submission_answers(submission_answer_ids)
+        count = await submission_answer_dao.delete_submission_answers(db, submission_answer_ids)
         return count
 
 

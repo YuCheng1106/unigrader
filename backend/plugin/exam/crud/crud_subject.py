@@ -32,8 +32,8 @@ class CRUDSubject(CRUDPlus[Subject]):
         """
         filters = {}
         if name:
-            filters.update(name__icontains=name)
-        return await self.select_models_order(sort_columns='id', **filters)
+            filters['name__icontains'] = name
+        return await self.select_order('id', **filters)
 
     async def get_all(self, db: AsyncSession) -> Sequence[Subject]:
         """
@@ -44,15 +44,15 @@ class CRUDSubject(CRUDPlus[Subject]):
         """
         return await self.select_models(db)
 
-    async def create(self, db: AsyncSession, obj: CreateSubjectParam) -> None:
+    async def create(self, db: AsyncSession, obj: CreateSubjectParam) -> Subject:
         """
         创建学科
 
         :param db: 数据库会话
         :param obj: 创建学科参数
-        :return:
+        :return: 创建的学科对象
         """
-        await self.create_model(db, obj)
+        return await self.create_model(db, obj)
 
     async def update(self, db: AsyncSession, pk: int, obj: UpdateSubjectParam) -> int:
         """

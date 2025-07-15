@@ -50,7 +50,7 @@ class CRUDSubmission(CRUDPlus[Submission]):
             filters.update(exam_id=exam_id)
         if status:
             filters.update(status=status)
-        return await self.select_models_order(sort_columns='created_time', sort_type='desc', **filters)
+        return await self.select_order('created_time', 'desc', **filters)
 
     async def get_all(self, db: AsyncSession) -> Sequence[Submission]:
         """

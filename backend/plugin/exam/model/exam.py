@@ -33,11 +33,3 @@ class Exam(Base):
     remark: Mapped[str | None] = mapped_column(
         LONGTEXT().with_variant(TEXT, 'postgresql'), default=None, comment='备注'
     )
-
-    # 多对多关系
-    users: Mapped[list[User]] = relationship(
-        init=False, secondary='exam_user', back_populates='exams'
-    )
-    banjis: Mapped[list[Banji]] = relationship(
-        init=False, secondary='exam_banji', back_populates='exams'
-    )
