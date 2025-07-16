@@ -13,13 +13,16 @@ from .utils.submission_answer_db import create_submission_answer_test_data, dele
 class TestSubmissionAnswerApi:
     """提交答案API测试"""
 
-    async def test_create_submission_answer(self, submission_answer_client: AsyncClient):
+    async def test_create_submission_answer(self, submission_answer_client: AsyncClient, submission_answer_db: AsyncSession):
         """测试创建提交答案"""
+        # 创建测试数据（不包含答案）
+        test_data = await create_submission_answer_test_data(submission_answer_db, include_answers=False)
+        
         json_data = {
-            'user_id': 1,
-            'exam_id': 1,
-            'submission_id': 1,
-            'exam_question_id': 1,
+            'user_id': test_data['user_id'],
+            'exam_id': test_data['exam_id'],
+            'submission_id': test_data['submission_id'],
+            'exam_question_id': test_data['exam_question_id'],
             'answer_content': '这是我的答案',
             'submitted_at': '2024-01-01T10:00:00'
         }
@@ -27,14 +30,24 @@ class TestSubmissionAnswerApi:
         assert response.status_code == 200
         response_data = response.json()
         assert response_data['code'] == 200
+        
+        # 清理测试数据
+        await delete_submission_answer_test_data(submission_answer_db)
 
-    async def test_get_submission_answer_detail(self, submission_answer_client: AsyncClient):
+    async def test_get_submission_answer_detail(self, submission_answer_client: AsyncClient, submission_answer_db: AsyncSession):
         """测试获取提交答案详情"""
-        response = await submission_answer_client.get('/api/v1/submission_answers/1')
+        # 创建测试数据（包含答案）
+        test_data = await create_submission_answer_test_data(submission_answer_db, include_answers=True)
+        submission_answer_id = test_data['submission_answer_ids'][0]
+        
+        response = await submission_answer_client.get(f'/api/v1/submission_answers/{submission_answer_id}')
         assert response.status_code == 200
         response_data = response.json()
         assert response_data['code'] == 200
-        assert response_data['data']['id'] == 1
+        assert response_data['data']['id'] == submission_answer_id
+        
+        # 清理测试数据
+        await delete_submission_answer_test_data(submission_answer_db)
 
     async def test_get_submission_answers_by_submission_id(self, submission_answer_client: AsyncClient):
         """测试通过提交ID获取所有答案"""
@@ -75,25 +88,39 @@ class TestSubmissionAnswerApi:
         assert response_data['code'] == 200
         assert isinstance(response_data['data'], list)
 
-    async def test_update_submission_answer(self, submission_answer_client: AsyncClient):
+    async def test_update_submission_answer(self, submission_answer_client: AsyncClient, submission_answer_db: AsyncSession):
         """测试更新提交答案"""
+        # 创建测试数据（包含答案）
+        test_data = await create_submission_answer_test_data(submission_answer_db, include_answers=True)
+        submission_answer_id = test_data['submission_answer_ids'][0]
+        
         json_data = {
             'answer_content': '更新后的答案',
             'is_correct': True,
             'score': 85.5,
             'feedback': '答案正确，表述清晰'
         }
-        response = await submission_answer_client.put('/api/v1/submission_answers/1', json=json_data)
+        response = await submission_answer_client.put(f'/api/v1/submission_answers/{submission_answer_id}', json=json_data)
         assert response.status_code == 200
         response_data = response.json()
         assert response_data['code'] == 200
+        
+        # 清理测试数据
+        await delete_submission_answer_test_data(submission_answer_db)
 
-    async def test_delete_submission_answer(self, submission_answer_client: AsyncClient):
+    async def test_delete_submission_answer(self, submission_answer_client: AsyncClient, submission_answer_db: AsyncSession):
         """测试删除提交答案"""
-        response = await submission_answer_client.delete('/api/v1/submission_answers/1')
+        # 创建测试数据（包含答案）
+        test_data = await create_submission_answer_test_data(submission_answer_db, include_answers=True)
+        submission_answer_id = test_data['submission_answer_ids'][0]
+        
+        response = await submission_answer_client.delete(f'/api/v1/submission_answers/{submission_answer_id}')
         assert response.status_code == 200
         response_data = response.json()
         assert response_data['code'] == 200
+        
+        # 清理测试数据
+        await delete_submission_answer_test_data(submission_answer_db)
 
     async def test_delete_submission_answers_batch(self, submission_answer_client: AsyncClient):
         """测试批量删除提交答案"""
