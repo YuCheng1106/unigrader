@@ -1,10 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
 from sqlalchemy import TEXT, String, ForeignKey, BigInteger
 from sqlalchemy.dialects.mysql import LONGTEXT
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from common.model import Base, id_key
+from plugin.exam.model.m2m import sys_user_exam
+
+if TYPE_CHECKING:
+    from app.admin.model import User
+    from plugin.exam.model.banji import Banji
 
 
 class Exam(Base):
@@ -26,3 +34,6 @@ class Exam(Base):
     remark: Mapped[str | None] = mapped_column(
         LONGTEXT().with_variant(TEXT, 'postgresql'), default=None, comment='备注'
     )
+    
+    # 考试用户多对多
+    users: Mapped[list[User]] = relationship(init=False, secondary=sys_user_exam, back_populates='exams')
